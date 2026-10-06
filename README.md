@@ -81,4 +81,4 @@ Issues and pull requests are welcome. If a build breaks on a new Buildozer or Ki
 
 ## License
 
-MIT
+Juma Leonine
