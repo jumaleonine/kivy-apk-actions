@@ -26,7 +26,13 @@ jobs:
         run: pip install buildozer "cython<3"
 
       - name: Build debug APK
-        run: buildozer -v android debug
+        run: |
+          buildozer -v android debug > build.log 2>&1 || {
+            echo "BUILD FAILED. Last 60 lines:"
+            tail -n 60 build.log
+            echo "::error::$(tail -n 8 build.log | tr '\n' ' ')"
+            exit 1
+          }
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -34,3 +40,11 @@ jobs:
           name: apk
           path: bin/*.apk
           if-no-files-found: error
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: ignore
