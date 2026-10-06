@@ -1,4 +1,0 @@
-pytest
-buildozer
-cython<3
-kivy==2.3.0
