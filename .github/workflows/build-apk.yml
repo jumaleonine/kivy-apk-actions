@@ -28,14 +28,14 @@ jobs:
       - name: Build debug APK
         run: |
           buildozer -v android debug > build.log 2>&1 || {
-            cut -c1-220 build.log > short.log
-            N=$(grep -n -m1 -E "Command failed|[^a-z]error:|Traceback" short.log | cut -d: -f1)
-            N=${N:-60}
-            S=$((N - 25))
+            cut -c1-200 build.log | grep -v -E "checking|configure:|print-multi-os-directory|no input files" > short.log
+            N=$(grep -n "Command failed" short.log | tail -n 1 | cut -d: -f1)
+            N=${N:-$(wc -l < short.log)}
+            S=$((N - 30))
             [ "$S" -lt 1 ] && S=1
-            echo "=== FIRST FAILURE AND CONTEXT ==="
-            sed -n "${S},$((N + 5))p" short.log
-            echo "::error::$(sed -n "${S},${N}p" short.log | tail -n 6 | tr '\n' ' ' | cut -c1-900)"
+            echo "=== LINES BEFORE THE REAL FAILURE ==="
+            sed -n "${S},${N}p" short.log
+            echo "::error::$(sed -n "${S},${N}p" short.log | tail -n 8 | tr '\n' ' ' | cut -c1-900)"
             exit 1
           }
 
